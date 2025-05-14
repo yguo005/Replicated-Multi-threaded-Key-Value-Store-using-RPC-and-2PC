@@ -97,9 +97,4 @@ Instructions will be highly dependent on the chosen RPC framework.
 *   **Concurrency and Synchronization:** The Key-Value store on each server replica must be protected against concurrent access from multiple client threads and from 2PC operation threads.
 
 
-## Project Deliverables
 
-The following items should be archived (e.g., in a `.zip` or `.tar.gz` file) and submitted via the course Moodle/BB page:
-1.  All novel Java source code files implementing the replicated client and server programs, plus any additional support code (e.g., IDL files if used).
-2.  Your executive summary (as a plain text file).
-    *   *(The prompt for Project #2 included README details. For Project #3, it only explicitly lists "Your executive summary" as item #2 after the code. However, it's good practice to include a README with build/run instructions, especially for a multi-component system like this. Clarify with your instructor if a full README beyond the executive summary is required for Project #3 deliverables.)*
