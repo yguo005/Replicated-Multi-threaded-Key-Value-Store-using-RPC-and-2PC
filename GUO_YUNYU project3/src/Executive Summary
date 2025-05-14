@@ -1,0 +1,54 @@
+Assignment Overview
+The project is to replicate key-value stored across 5 distinct servers. The client should be able to
+contact any of the five key-value replica servers and get consistent data back from any of the replicas.
+
+Ensuring PUT and DELETE operations are consistent.To do this, implement a two-phase protocol for updates.
+Use client to pre-populate the key-value store. Also adding multi-threaded server capabilities using
+Remote Procedure Call.
+
+Technical Impression
+The client randomly select one of the 5 servers for each operation, ensuring that operations are
+distributed across all replicas. In the server class, the connectToOtherServers() method connects
+the server to the other 4 servers, creating a network of 5 servers total. The put method
+and the delete method use a 2PC protocol to ensure consistency across all servers.
+
+Two-Phase Commit (2PC) for consistency:
+Prepare phase: The prepareAllServers() method implements the prepare phase of 2PC, ensuring all
+servers are ready for a change.
+Commit phase: the commitAllServers() method implements the commit phase of 2PC,
+applying the change to all servers.
+Abort mechanism: the abortAllServers() method aborts the operation if the prepare phase fails.
+When a PUT or DELETE operation is received, the server initiates the prepare phase with all other servers.
+If all servers respond with "YES" (ACK), the commit phase is initiated.
+If any server fails to respond or responds with "NO", the operation is aborted on all servers.
+The commit phase ensures that all servers apply the change.
+The implementation includes a timeout of 5 seconds in the prepare phase, addressing the requirement
+for defensive coding with timeouts.
+
+Aggregating data from all servers: the getAll() method aggregates data from all servers, ensuring
+clients can get consistent data from any server.
+Server startup coordination: the coordinateStartup() method ensures all servers are ready before the
+system becomes fully operational.
+
+I encounter server connection refuse issue when try to connect the current server 8001 to other servers,
+because they are not yet running. I fix the error by Implement a startup coordination. Instead of
+having each server try to connect to all others immediately, implement a "master" server
+that coordinates the startup of other servers. This is done by isMaster(), coordinateStartup(),
+waitForMasterSignal() methods. I Open five separate terminal windows and start each server individually:
+java Server 8001 8002 8003 8004 8005 true
+java Server 8002 8001 8003 8004 8005 false
+java Server 8003 8001 8002 8004 8005 false
+java Server 8004 8001 8002 8003 8005 false
+java Server 8005 8001 8002 8003 8004 false
+The last parameter (true or false) indicates whether the server is the master coordinator.
+
+How to Run
+1. comply all java files: javac *.java
+2. run 5 instances of servers: java Server 8001 8002 8003 8004 8005 true
+                   java Server 8002 8001 8003 8004 8005 false
+                   java Server 8003 8001 8002 8004 8005 false
+                   java Server 8004 8001 8002 8003 8005 false
+                   java Server 8005 8001 8002 8003 8004 false
+3. run the client: testing with one server
+java Client localhost 8001 localhost 8001 localhost 8001 localhost 8001 localhost 8001
+4. enter command when client is running: GET key, PUT key value, DELETE key, GETALL, QUIT
